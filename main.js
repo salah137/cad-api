@@ -2,14 +2,50 @@ const express = require("express")
 const auth = require('./auth')
 const database = require("./database")
 const app = express()
+const cors = require('cors');
+
+app.use(cors());
+
+app.use("/annonce", (req, res, next) => {
+    const authHeader = req.header('authorization');
+    console.log(authHeader);
+    if (authHeader == null) return res.sendStatus(401);
+
+    jwt.verify(authHeader, (process.env.TOKEN_SECRET), (err, user) => {
+        console.log(err);
+
+        if (err) return res.sendStatus(403);
+
+        req.user = user; 
+
+        next(); 
+    });
+})
+
+app.use("/tutorial", (req, res, next) => {
+    const authHeader = req.header('authorization');
+    console.log(authHeader);
+    if (authHeader == null) return res.sendStatus(401);
+
+    jwt.verify(authHeader, (process.env.TOKEN_SECRET), (err, user) => {
+        console.log(err);
+
+        if (err) return res.sendStatus(403);
+
+        req.user = user; 
+
+        next();
+    });
+})
 
 app.post("/signUp", async (req, res) => {
+    console.log(req.body);
     res.json(
         await auth.signUp(
             req.body.name,
             req.body.email,
             req.body.password,
-            req.body.profile
+            req.body.cellule
         )
     )
 })
@@ -23,13 +59,13 @@ app.post("/signIn", async (req, res) => {
     )
 })
 
-app.get("/getAnnonce", async (req, res) => {
+app.get("annonce/getAnnonce", async (req, res) => {
     res.json(
         await database.getAnnonce()
     )
 })
 
-app.post("/addAnnonce", async (req, res) => {
+app.post("annonce/addAnnonce", async (req, res) => {
     res.json(
         await database.addAnnonce(
             req.body.title,
@@ -40,7 +76,7 @@ app.post("/addAnnonce", async (req, res) => {
     )
 })
 
-app.patch("/updateAnnonce", async (req, res) => {
+app.patch("annonce/updateAnnonce", async (req, res) => {
     res.json(
         await database.updateAnnonce(
             req.body.id,
@@ -51,7 +87,7 @@ app.patch("/updateAnnonce", async (req, res) => {
     )
 })
 
-app.delete("/deleteAnnonce", async (req, res) => {
+app.delete("annonce/deleteAnnonce", async (req, res) => {
     res.json(
         await database.deleteAnnonce(
             req.body.id
@@ -59,7 +95,7 @@ app.delete("/deleteAnnonce", async (req, res) => {
     )
 })
 
-app.get("/getTutorials", async (req, res) => {
+app.get("tutorial/getTutorials", async (req, res) => {
     res.json(
         await database.getTutorials(
             req.body.topic
@@ -67,7 +103,7 @@ app.get("/getTutorials", async (req, res) => {
     )
 })
 
-app.get("/getTUtorial", async (req, res) => {
+app.get("tutorial/getTUtorial", async (req, res) => {
     res.json(
         await database.getTutorial(
             req.body.id
@@ -75,7 +111,7 @@ app.get("/getTUtorial", async (req, res) => {
     )
 })
 
-app.get("/addTutorial", async (req, res) => {
+app.get("tutorial/addTutorial", async (req, res) => {
     res.json(
         await database.addTutorial(
             req.body.title,
@@ -86,7 +122,7 @@ app.get("/addTutorial", async (req, res) => {
     )
 })
 
-app.post("/addTutorialElement",async(req,res)=>{
+app.post("tutorial/addTutorialElement",async(req,res)=>{
     res.json(
         await database.addTutorialElement(
             req.body.tutorialId, req.body.title, req.body.description, req.body.files
@@ -94,7 +130,7 @@ app.post("/addTutorialElement",async(req,res)=>{
     )
 })
 
-app.patch("/updateTutorialElement",async(req,res)=>{
+app.patch("tutorial/updateTutorialElement",async(req,res)=>{
     res.json(
         database.updateTutorialElement(
             req.body.id, req.body.title, req.body.description, req.body.files
@@ -102,7 +138,7 @@ app.patch("/updateTutorialElement",async(req,res)=>{
     )
 })
 
-app.delete("/deleteTutorialElement",async(req,res)=>{
+app.delete("tutorial/deleteTutorialElement",async(req,res)=>{
     res.json(
         await database.deleteTutorialElement(req.body.id)
     )
