@@ -4,7 +4,10 @@ const database = require("./database")
 const app = express()
 const cors = require('cors');
 
+require("dotenv").config()
+
 app.use(cors());
+app.use(express.json());
 
 app.use("/annonce", (req, res, next) => {
     const authHeader = req.header('authorization');
@@ -35,17 +38,19 @@ app.use("/tutorial", (req, res, next) => {
         req.user = user; 
 
         next();
-    });
+    });  
 })
 
 app.post("/signUp", async (req, res) => {
-    console.log(req.body);
-    res.json(
-        await auth.signUp(
+    console.log("hiii");
+    console.log(req.body.name);
+    res.json( 
+        await auth.signUp( 
             req.body.name,
             req.body.email,
             req.body.password,
-            req.body.cellule
+            req.body.cellule,
+            req.body.userType
         )
     )
 })
@@ -58,7 +63,7 @@ app.post("/signIn", async (req, res) => {
         )
     )
 })
-
+ 
 app.get("annonce/getAnnonce", async (req, res) => {
     res.json(
         await database.getAnnonce()
@@ -143,6 +148,7 @@ app.delete("tutorial/deleteTutorialElement",async(req,res)=>{
         await database.deleteTutorialElement(req.body.id)
     )
 })
+
 app.listen(
     5000,
     () => {

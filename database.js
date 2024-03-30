@@ -136,4 +136,6 @@ async function deleteTutorialElement(id) {
     )
 }
 
+
+
 module.exports = { getAnnonce, addAnnonce, updateAnnonce, deleteAnnonce, addTutorial, updateTutorial, deleteTutorial, getTutorials, getTutorial, addTutorialElement, updateTutorialElement, deleteTutorialElement }

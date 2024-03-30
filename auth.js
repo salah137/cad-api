@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const argon2 = require('argon2');
 
+require("dotenv").config()
+
 const prisma = new PrismaClient();
 
 function authenticateToken(req, res, next) {
@@ -23,9 +25,9 @@ function authenticateToken(req, res, next) {
 
 
 // Consider loading the JWT secret key from environment variables for security
-const jwtSecretKey = (process.env.JWT_SECRET_KEY);
+const jwtSecretKey = (process.env.TOKEN_SECRET);
 
-async function signUp(name, email, password, profile) {
+async function signUp(name, email, password, profile, userType) {
     const hashedPassword = await argon2.hash(password);
     try {
         console.log(email)
@@ -36,6 +38,7 @@ async function signUp(name, email, password, profile) {
                 name: name,
                 profile,
                 password: hashedPassword,
+                userType 
             },
         });
 

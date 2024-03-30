@@ -13,41 +13,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin{
-  id Int @id @default(autoincrement())
-  name String @unique
-  profile String 
-  email String @unique
+model Admin {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  profile  String
+  email    String    @unique
   password String
-  annonces  Annonce[]
+  userType Int
+  annonces Annonce[]
 }
 
-model Annonce{  
-  id Int @id @default(autoincrement())
-  title String 
+model Annonce {
+  id          Int              @id @default(autoincrement())
+  title       String
   description String
-  files String 
-  authorId Int?
-  time DateTime @default(now())
-  author    Admin?   @relation(fields: [authorId], references: [id])
+  files       String
+  comments    AnnonceComment[]
+  authorId    Int?
+  time        DateTime         @default(now())
+  author      Admin?           @relation(fields: [authorId], references: [id])
 }
 
-model Tutorial{  
-  id Int @id @default(autoincrement())
-  title String 
+model Tutorial {
+  id          Int               @id @default(autoincrement())
+  title       String
   description String
-  topic String
-  image String
-  items TutorialElement[]
+  topic       String
+  image       String
+  items       TutorialElement[]
 }
 
 model TutorialElement {
-  id Int @id @default(autoincrement())
-  title String
+  id          Int       @id @default(autoincrement())
+  title       String
   description String
-  files String 
-  views Int
-  time DateTime @default(now())
-  tutorial Tutorial? @relation(fields: [tutorialId], references: [id])
-  tutorialId Int?
+  files       String
+  views       Int
+  time        DateTime  @default(now())
+  tutorial    Tutorial? @relation(fields: [tutorialId], references: [id])
+  tutorialId  Int?
+
+  comments TutorialComment[]
+}
+
+model TutorialComment {
+  id                Int             @id @default(autoincrement())
+  text              String
+  userName          String
+  tutorialElement   TutorialElement @relation(fields: [tutorialElementId], references: [id])
+  tutorialElementId Int
+}
+
+model AnnonceComment {
+  id        Int     @id @default(autoincrement())
+  text      String
+  userName  String
+  annonce   Annonce @relation(fields: [annonceId], references: [id])
+  annonceId Int
 }
