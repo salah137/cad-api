@@ -3,11 +3,13 @@ const auth = require('./auth')
 const database = require("./database")
 const app = express()
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 require("dotenv").config()
 
 app.use(cors());
 app.use(express.json());
+
 
 app.use("/annonce", (req, res, next) => {
     const authHeader = req.header('authorization');
@@ -18,7 +20,7 @@ app.use("/annonce", (req, res, next) => {
         console.log(err);
 
         if (err) return res.sendStatus(403);
-
+ 
         req.user = user; 
 
         next(); 
@@ -64,25 +66,25 @@ app.post("/signIn", async (req, res) => {
     )
 })
  
-app.get("annonce/getAnnonce", async (req, res) => {
+app.get("/annonce/getAnnonce", async (req, res) => {
     res.json(
         await database.getAnnonce()
     )
 })
 
-app.post("annonce/addAnnonce", async (req, res) => {
+app.post("/annonce/addAnnonce", async (req, res) => {
     res.json(
         await database.addAnnonce(
             req.body.title,
             req.body.description,
             req.body.files,
-            req.body.authorId
+            Number(req.body.authorId)
         )
     )
 })
 
-app.patch("annonce/updateAnnonce", async (req, res) => {
-    res.json(
+app.patch("/annonce/updateAnnonce", async (req, res) => {
+    res.json( 
         await database.updateAnnonce(
             req.body.id,
             req.body.title,
@@ -92,7 +94,7 @@ app.patch("annonce/updateAnnonce", async (req, res) => {
     )
 })
 
-app.delete("annonce/deleteAnnonce", async (req, res) => {
+app.delete("/annonce/deleteAnnonce", async (req, res) => {
     res.json(
         await database.deleteAnnonce(
             req.body.id
@@ -100,7 +102,7 @@ app.delete("annonce/deleteAnnonce", async (req, res) => {
     )
 })
 
-app.get("tutorial/getTutorials", async (req, res) => {
+app.get("/tutorial/getTutorials", async (req, res) => {
     res.json(
         await database.getTutorials(
             req.body.topic
@@ -108,7 +110,7 @@ app.get("tutorial/getTutorials", async (req, res) => {
     )
 })
 
-app.get("tutorial/getTUtorial", async (req, res) => {
+app.get("/tutorial/getTUtorial", async (req, res) => {
     res.json(
         await database.getTutorial(
             req.body.id
@@ -116,7 +118,7 @@ app.get("tutorial/getTUtorial", async (req, res) => {
     )
 })
 
-app.get("tutorial/addTutorial", async (req, res) => {
+app.get("/tutorial/addTutorial", async (req, res) => {
     res.json(
         await database.addTutorial(
             req.body.title,
@@ -127,7 +129,7 @@ app.get("tutorial/addTutorial", async (req, res) => {
     )
 })
 
-app.post("tutorial/addTutorialElement",async(req,res)=>{
+app.post("/tutorial/addTutorialElement",async(req,res)=>{
     res.json(
         await database.addTutorialElement(
             req.body.tutorialId, req.body.title, req.body.description, req.body.files
@@ -135,7 +137,7 @@ app.post("tutorial/addTutorialElement",async(req,res)=>{
     )
 })
 
-app.patch("tutorial/updateTutorialElement",async(req,res)=>{
+app.patch("/tutorial/updateTutorialElement",async(req,res)=>{
     res.json(
         database.updateTutorialElement(
             req.body.id, req.body.title, req.body.description, req.body.files
@@ -143,7 +145,7 @@ app.patch("tutorial/updateTutorialElement",async(req,res)=>{
     )
 })
 
-app.delete("tutorial/deleteTutorialElement",async(req,res)=>{
+app.delete("/tutorial/deleteTutorialElement",async(req,res)=>{
     res.json(
         await database.deleteTutorialElement(req.body.id)
     )

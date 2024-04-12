@@ -12,14 +12,14 @@ function authenticateToken(req, res, next) {
 
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.TOKEN_SECRET , (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
         console.log(err);
 
         if (err) return res.sendStatus(403);
 
         req.user = user;
 
-        next(); 
+        next();
     });
 }
 
@@ -38,15 +38,16 @@ async function signUp(name, email, password, profile, userType) {
                 name: name,
                 profile,
                 password: hashedPassword,
-                userType 
+                userType
             },
         });
 
         const token = await generateToken();
         console.log(token)
         return {
-            "id" : user.id,
-            "token" : token,
+            "id": user.id,
+            "token": token,
+            "type": userType
         };
     } catch (error) {
         console.log(error)
@@ -59,9 +60,9 @@ async function signUp(name, email, password, profile, userType) {
         }
     }
 }
-  
+
 async function signIn(email, password) {
- 
+
     const user = await prisma.admin.findUnique({
         where: {
             email: email, // Add this line to specify the email
@@ -71,8 +72,9 @@ async function signIn(email, password) {
     if (user && (await argon2.verify(user.password, password))) {
         const token = await generateToken(user.id);
         return {
-            "id" : user.id,
-            "token" : token,
+            "id": user.id,
+            "token": token,
+            "type":user.userType
         };
     } else {
         return "Invalid email or password";
@@ -85,8 +87,8 @@ async function generateToken(id) {
         userId: id,
     };
 
-    const token =  jwt.sign(data, jwtSecretKey);
+    const token = jwt.sign(data, jwtSecretKey);
     return token;
 }
 
-module.exports = {signUp,signIn}
+module.exports = { signUp, signIn }
