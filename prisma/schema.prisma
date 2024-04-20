@@ -47,6 +47,8 @@ model TutorialElement {
   id          Int       @id @default(autoincrement())
   title       String
   description String
+  video String
+  image String
   files       String
   views       Int
   time        DateTime  @default(now())

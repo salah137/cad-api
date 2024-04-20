@@ -41,7 +41,7 @@ async function deleteAnnonce(id) {
     )
 }
 
-async function addTutorial(title, topic,image, description) {
+async function addTutorial(title, topic, image, description) {
     return await prisma.tutorial.create(
         {
             data: {
@@ -54,14 +54,14 @@ async function addTutorial(title, topic,image, description) {
     )
 }
 
-async function updateTutorial(id, title, topic, description,image) {
+async function updateTutorial(id, title, topic, description, image) {
     return await prisma.tutorial.update(
         {
             where: {
                 id
             },
             data: {
-                title, topic, description,image
+                title, topic, description, image
             }
         }
     )
@@ -79,39 +79,54 @@ async function deleteTutorial(id) {
     await prisma.tutorialElement.deleteMany(
         {
             where: {
-                tutorialId : id
+                tutorialId: id
             }
         }
     )
 
     return {
-        "process" : "done"
+        "process": "done"
     }
 }
 
 async function getTutorials(topic) {
-    const { title, description, topicc } = await prisma.tutorial.findMany({ where: { topic } })
-    return {
-        title,
-        description,
-        "topic": topicc
-    }
+    const tutorials = await prisma.tutorial.findMany({ where: { topic: topic } })
+    return tutorials.map(
+        (e) => {
+            return {
+                id: e.id,
+                topic: e.topic,
+                description: e.description,
+                title: e.title,
+                image: e.image
+            }
+        }
+    )
 }
 
 async function getTutorial(id) {
     return await prisma.tutorialElement.findMany({
-        tutorialId: id
-    })
-}
-
-async function addTutorialElement(tutorialId, title, description, files,) {
-    return await prisma.tutorialElement.create({
-        data: {
-            tutorialId, title, description, files
+        where: {
+            tutorialId: id
         }
     })
 }
 
+async function addTutorialElement(tutorialId, title, description, video, image, files,) {
+    return await prisma.tutorialElement.create({
+        data: {
+            tutorialId, title, description, image, video, files, views: 0
+        }
+    })
+}
+
+async function getTutorialElement(id) {
+    return await prisma.tutorialElement.findFirst({
+        where: {
+            id
+        }
+    })
+}
 
 async function updateTutorialElement(id, title, description, files) {
     return await prisma.tutorialElement.update(
@@ -138,4 +153,4 @@ async function deleteTutorialElement(id) {
 
 
 
-module.exports = { getAnnonce, addAnnonce, updateAnnonce, deleteAnnonce, addTutorial, updateTutorial, deleteTutorial, getTutorials, getTutorial, addTutorialElement, updateTutorialElement, deleteTutorialElement }
+module.exports = { getAnnonce, addAnnonce, updateAnnonce, deleteAnnonce, addTutorial, updateTutorial, deleteTutorial, getTutorials, getTutorial, addTutorialElement, updateTutorialElement, deleteTutorialElement, getTutorialElement }
