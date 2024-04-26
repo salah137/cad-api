@@ -53,7 +53,7 @@ model TutorialElement {
   views       Int
   time        DateTime  @default(now())
   tutorial    Tutorial? @relation(fields: [tutorialId], references: [id])
-  tutorialId  Int?
+  tutorialId  Int
 
   comments TutorialComment[]
 }
