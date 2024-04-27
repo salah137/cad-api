@@ -113,7 +113,7 @@ async function getTutorial(id) {
 }
 
 async function addTutorialElement(tutorialId, title, description, video, image, files) {
-    return await prisma.tutorialElement.create({
+    const ss = await prisma.tutorialElement.create({
         data: {
             tutorial: { connect: { id: tutorialId } },
             title,
@@ -124,6 +124,8 @@ async function addTutorialElement(tutorialId, title, description, video, image, 
             views: 0
         }
     });
+    console.log(ss);
+    return ss
 }
 
 async function getTutorialElement(id) {
